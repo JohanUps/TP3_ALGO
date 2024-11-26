@@ -67,9 +67,11 @@ void skiplist_delete(SkipList** d) {
     free(skiplist);
 }
 
+
+
 SkipList* skiplist_insert(SkipList* d, int value) {
     
-    //Recherche de l'endroit ou le nouveau noeud doit être insérer (le curseur va pointer sur le plus grand element dont la key est inférieur ou égale à value)
+    //Recherche de l'endroit ou le nouveau noeud doit être insérer (le curseur va pointer sur le plus grand element dont la key est inférieur ou égale à value) /*A optimiser (ne pas passer necessairement par link[0]) */ //TODO
     Node* cursor = d->sentinel->link[0]->next;
     while(cursor->key <= cursor->link[0]->next->key){
         cursor = cursor->link[0]->next;
@@ -86,22 +88,29 @@ SkipList* skiplist_insert(SkipList* d, int value) {
         newElem->key = value;
         newElem->level = newElemLevel;
         
-        //Creation du pointeur sur l'element qui suit le curseur ainsi que sur l'element qui le precede
+        //Creation du pointeur sur l'element qui suit le curseur ainsi que sur l'element qui le precede  
         Node* precedent = cursor->link[0]->prev;
         Node* suivant = cursor->link[0]->next;
         
-        //Mise a jour des pointeurs de l'element precedent
-        for(unsigned int i = 0; (i < newElemLevel && i < precedent->level); i++){
-             precedent->link[i]->next = newElem;
+        //*Mise a jour des pointeurs de newElem
+        
+            //Mise a jour des ponteurs next des éléments précédents newElem et mise à jour des champs 
+        int nbPointeursMAJ = 0;
+        while(nbPointeursMAJ < newElemLevel){
+            //Mettre a jour autant de pointeurs prev que possible vers l'element precedent
+            for(unsigned int i = nbPointeursMAJ; i < newElemLevel && i < precedent->key; i++){
+                newElem->link[i]->prev = precedent;
+                precedent->link[i]->next = newElem;
+                nbPointeursMAJ++;
+            }
+            
+            //Recherche d'un noeud de plus haut niveau pour mettre les pointeurs manquant (deplacement sur le pointeur prev de plus haut niveau)
+            precedent = precedent->link[precedent->level - 1]->prev;
         }
         
-        
-        //Mise a jour des pointeurs de newElem
-        
-            //Mise a jour des pointeurs prev
-            //TODO
             
-            //Mise a jour des pointeurs next
+            
+            //-Mise a jour des pointeurs next
             //TODO
         
         //Mise a jour des pointeurs de l'element suivant
