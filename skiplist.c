@@ -94,31 +94,36 @@ SkipList* skiplist_insert(SkipList* d, int value) {
         
         //*Mise a jour des pointeurs de newElem
         
-            //Mise a jour des ponteurs next des éléments précédents newElem et mise à jour des champs 
-        int nbPointeursMAJ = 0;
+            //Mise a jour des pointeurs next des éléments précédents newElem et mise à jour des champs 
+        unsigned int nbPointeursMAJ = 0;
         while(nbPointeursMAJ < newElemLevel){
             //Mettre a jour autant de pointeurs prev que possible vers l'element precedent
-            for(unsigned int i = nbPointeursMAJ; i < newElemLevel && i < precedent->key; i++){
+            for(unsigned int i = nbPointeursMAJ; i < newElemLevel && i < precedent->level; i++){
                 newElem->link[i]->prev = precedent;
                 precedent->link[i]->next = newElem;
                 nbPointeursMAJ++;
             }
             
             //Recherche d'un noeud de plus haut niveau pour mettre les pointeurs manquant (deplacement sur le pointeur prev de plus haut niveau)
-            precedent = precedent->link[precedent->level - 1]->prev;
+            precedent = precedent->link[nbPointeursMAJ - 1]->prev;
         }
         
             
             
-            //-Mise a jour des pointeurs next
-            //TODO
-        
-        //Mise a jour des pointeurs de l'element suivant
-        //TODO
-        
+        //Mise a jour des pointeurs prev des éléments suivant newElem et mise à jour des champs next
+        nbPointeursMAJ = 0;
+        while(nbPointeursMAJ < newElemLevel){
+            //Mettre a jour autant de pointeurs next que possible vers l'element suivant
+            for(unsigned int i = nbPointeursMAJ; i < newElemLevel && i < suivant->level; i++){
+            newElem->link[i]->next = suivant;
+            suivant->link[i]->prev = newElem;
+            nbPointeursMAJ++;
+            }
+            suivant = suivant->link[nbPointeursMAJ - 1]->next;
+        }
         
         //Incrementation de la taille de la liste
-        //TODO
+        d->size++;
     }
 	return d;
 }
